@@ -5,7 +5,7 @@ const items = [
   ['Como cadastrar minha assinatura?', 'Abra Configurações, vá até Minha assinatura e escolha desenhar ou importar uma imagem.'],
   ['Como apagar e refazer minha assinatura?', 'No desenho, toque em Apagar tudo. Sua assinatura antiga só será substituída quando você tocar em OK.'],
   ['Como importar uma assinatura?', 'Em Minha assinatura, toque em Importar imagem. Escolha uma foto, recorte, ajuste e confirme a prévia.'],
-  ['Onde encontro os recibos antigos?', 'Abra a aba Histórico. Você pode pesquisar pelo nome e filtrar por mês ou ano.'],
+  ['Onde encontro os recibos antigos?', 'Abra a aba Histórico. Você pode pesquisar por nome ou número e combinar os filtros de pessoa, mês e ano.'],
   ['Como compartilhar um PDF?', 'Abra um recibo e toque em Compartilhar. Se o celular não oferecer essa opção, o PDF será baixado para você enviá-lo manualmente.'],
   ['Como fazer backup?', 'Abra Configurações, vá até Dados e backup e toque em Fazer backup. Guarde o arquivo em um lugar seguro.'],
   ['Como restaurar meus dados?', 'Em Dados e backup, toque em Restaurar backup e escolha um arquivo criado pelo aplicativo. Confira o resumo antes de confirmar.'],

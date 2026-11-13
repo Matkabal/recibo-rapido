@@ -7,6 +7,7 @@ import { generateReceiptPdf } from './pdf'
 export async function issueReceipt(draft: ReceiptDraft): Promise<Receipt> {
   const issuedAt = new Date()
   const year = issuedAt.getFullYear()
+  const issueMonth = issuedAt.getMonth() + 1
   const issuer = await getIssuer()
   const signature = await getSignature()
   if (!issuer?.name.trim() || !issuer.city.trim()) throw new Error('Preencha o nome e a cidade do emitente antes de gerar o recibo.')
@@ -16,7 +17,7 @@ export async function issueReceipt(draft: ReceiptDraft): Promise<Receipt> {
   for (let attempt = 0; attempt < 8; attempt += 1) {
     const observed = await db.annualCounters.get(year)
     const sequence = (observed?.lastSequence ?? 0) + 1
-    const number = `${year}-${String(sequence).padStart(4, '0')}`
+    const number = `${year}-${String(issueMonth).padStart(2, '0')}-${String(sequence).padStart(4, '0')}`
     const pdfBlob = await generateReceiptPdf({
       number,
       issuedAt,

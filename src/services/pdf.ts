@@ -66,8 +66,6 @@ export async function generateReceiptPdf(input: PdfReceiptInput): Promise<Blob> 
   const body = `Recebi de ${input.person.name.toLocaleUpperCase('pt-BR')}, CPF ${formatCpf(input.person.cpf)}, a importância de ${formatCurrency(input.amountCents)} (${moneyToWords(input.amountCents)}), referente ao pagamento do aluguel residencial correspondente ao mês de ${monthName(input.referenceMonth)} de ${input.referenceYear}.`
   let y = height - 225
   y = drawWrapped(page, wrapText(body, regular, 11, contentWidth), regular, 11, margin, y, 18)
-  y -= 20
-  y = drawWrapped(page, wrapText('Declaro recebido e quitado o valor do aluguel acima discriminado.', regular, 11, contentWidth), regular, 11, margin, y, 18)
   y -= 38
   page.drawText(`${input.issuer.city}, ${formatLongDate(input.issuedAt)}.`, { x: margin, y, font: regular, size: 11 })
 

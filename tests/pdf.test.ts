@@ -21,6 +21,7 @@ describe('PDF do recibo', () => {
       try { return [new TextDecoder().decode(decodePDFRawStream(object).decode())] } catch { return [] }
     }).join('\n')
     expect(content).toContain('52454349424F20444520414C554755454C')
+    expect(content).not.toContain('4465636C61726F')
     expect(content.match(/ Tj/g)?.length).toBeGreaterThan(8)
   })
 

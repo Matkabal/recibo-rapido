@@ -31,13 +31,13 @@ describe('emissão de recibos', () => {
     vi.setSystemTime(new Date('2026-11-13T15:30:00-03:00'))
     const first = await issueReceipt({ person, amountCents: 85000, referenceMonth: 10, referenceYear: 2026, paymentConfirmed: true })
     const second = await issueReceipt({ person, amountCents: 90000, referenceMonth: 11, referenceYear: 2026, paymentConfirmed: true })
-    expect(first.number).toBe('2026-0001')
-    expect(second.number).toBe('2026-0002')
+    expect(first.number).toBe('2026-11-0001')
+    expect(second.number).toBe('2026-11-0002')
     expect(first.referenceMonth).toBe(10)
     expect(new Date(first.issuedAt).getMonth()).toBe(10)
     vi.setSystemTime(new Date('2027-01-02T10:00:00-03:00'))
     const nextYear = await issueReceipt({ person, amountCents: 85000, referenceMonth: 12, referenceYear: 2026, paymentConfirmed: true })
-    expect(nextYear.number).toBe('2027-0001')
+    expect(nextYear.number).toBe('2027-01-0001')
   })
 
   it('evita números duplicados em emissões concorrentes', async () => {
