@@ -40,14 +40,18 @@ Os testes E2E geram o build e iniciam a prévia automaticamente.
 
 ## Publicação
 
-O conteúdo de `dist/` pode ser publicado em qualquer hospedagem estática com HTTPS. A hospedagem deve:
+O aplicativo é publicado automaticamente no GitHub Pages a cada push na branch `main`:
+
+https://matkabal.github.io/recibo-rapido/
+
+O workflow está em `.github/workflows/deploy-pages.yml`. O conteúdo de `dist/` também pode ser publicado em qualquer hospedagem estática com HTTPS. A hospedagem deve:
 
 1. Servir `index.html` e todos os arquivos mantendo seus caminhos.
 2. Usar HTTPS.
 3. Não alterar os cabeçalhos dos arquivos do service worker.
 4. Direcionar navegações desconhecidas para `index.html`, quando aplicável.
 
-O projeto contém `.openai/hosting.json` para publicação pelo Sites.
+No GitHub, a origem de Pages deve permanecer configurada como **GitHub Actions**.
 
 ## Instalação no Android
 

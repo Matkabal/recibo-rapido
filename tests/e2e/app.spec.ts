@@ -3,19 +3,19 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 test('abre na tela inicial e navega pelas cinco abas', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('./')
   await expect(page.getByRole('heading',{name:'Recibo Rápido'})).toBeVisible()
   for (const tab of ['Pessoas','Histórico','Configurações','Ajuda']) { await page.getByRole('button',{name:tab,exact:true}).click(); await expect(page.getByRole('heading',{name:tab,exact:true})).toBeVisible() }
 })
 
 test('cadastra uma pessoa e preserva após recarregar', async ({ page }) => {
-  await page.goto('/'); await page.getByRole('button',{name:'Pessoas',exact:true}).click(); await page.getByRole('button',{name:'Adicionar pessoa'}).click()
+  await page.goto('./'); await page.getByRole('button',{name:'Pessoas',exact:true}).click(); await page.getByRole('button',{name:'Adicionar pessoa'}).click()
   await page.getByLabel('Nome completo').fill('Maria da Silva'); await page.getByLabel('CPF').fill('52998224725'); await page.getByLabel('Valor padrão do aluguel').fill('850'); await page.getByRole('button',{name:'Salvar',exact:true}).click()
   await expect(page.getByText('Maria da Silva')).toBeVisible(); await page.reload(); await page.getByRole('button',{name:'Pessoas',exact:true}).click(); await expect(page.getByText('Maria da Silva')).toBeVisible()
 })
 
 test('gera e preserva o PDF original no histórico', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('./')
   await page.getByRole('button',{name:'Configurações',exact:true}).click()
   await page.getByLabel('Nome completo').fill('José Recebedor')
   await page.getByLabel('Cidade de emissão').fill('Salvador')
@@ -47,14 +47,14 @@ test('gera e preserva o PDF original no histórico', async ({ page }) => {
 })
 
 test('expõe manifest e service worker no build', async ({ request }) => {
-  const manifest = await request.get('/manifest.webmanifest')
+  const manifest = await request.get('./manifest.webmanifest')
   expect(manifest.ok()).toBeTruthy()
   expect((await manifest.json()).name).toBe('Recibo Rápido')
-  expect((await request.get('/sw.js')).ok()).toBeTruthy()
+  expect((await request.get('./sw.js')).ok()).toBeTruthy()
 })
 
 test('desenha, salva e preserva a assinatura ao cancelar', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('./')
   await page.getByRole('button',{name:'Configurações',exact:true}).click()
   await page.getByRole('button',{name:'Desenhar ou importar assinatura'}).click()
   const canvas = page.getByLabel('Área para desenhar assinatura')
@@ -73,7 +73,7 @@ test('desenha, salva e preserva a assinatura ao cancelar', async ({ page }) => {
 })
 
 test('importa e confirma uma assinatura como imagem', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('./')
   await page.getByRole('button',{name:'Configurações',exact:true}).click()
   await page.getByRole('button',{name:'Desenhar ou importar assinatura'}).click()
   await page.getByRole('button',{name:'Importar imagem'}).click()
@@ -86,7 +86,7 @@ test('importa e confirma uma assinatura como imagem', async ({ page }) => {
 })
 
 test('continua abrindo sem rede após preparar o service worker', async ({ page, context }) => {
-  await page.goto('/')
+  await page.goto('./')
   await page.evaluate(() => navigator.serviceWorker.ready)
   await context.setOffline(true)
   await page.reload()
