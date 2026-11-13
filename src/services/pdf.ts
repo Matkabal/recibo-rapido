@@ -1,6 +1,4 @@
-import fontkit from '@pdf-lib/fontkit'
-import { PDFDocument, rgb, type PDFFont, type PDFPage } from 'pdf-lib'
-import interFontUrl from '@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2?url'
+import { PDFDocument, rgb, StandardFonts, type PDFFont, type PDFPage } from 'pdf-lib'
 import type { IssuerSettings, Person, Receipt, Signature } from '../types'
 import { formatCpf, formatCurrency, formatLongDate, monthName } from '../utils/format'
 import { moneyToWords } from '../utils/words'
@@ -14,15 +12,6 @@ export interface PdfReceiptInput {
   amountCents: number
   issuer: IssuerSettings
   signature?: Signature
-}
-
-let regularFontBytes: Promise<ArrayBuffer> | undefined
-
-function loadFont(path: string): Promise<ArrayBuffer> {
-  return fetch(path).then((response) => {
-    if (!response.ok) throw new Error('Não foi possível carregar a fonte do recibo.')
-    return response.arrayBuffer()
-  })
 }
 
 function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
@@ -53,12 +42,9 @@ function drawWrapped(page: PDFPage, lines: string[], font: PDFFont, size: number
 }
 
 export async function generateReceiptPdf(input: PdfReceiptInput): Promise<Blob> {
-  regularFontBytes ??= loadFont(interFontUrl)
-  const regularBytes = await regularFontBytes
   const pdf = await PDFDocument.create()
-  pdf.registerFontkit(fontkit)
-  const regular = await pdf.embedFont(regularBytes, { subset: true })
-  const semibold = regular
+  const regular = await pdf.embedFont(StandardFonts.Helvetica)
+  const semibold = await pdf.embedFont(StandardFonts.HelveticaBold)
   const page = pdf.addPage([595.28, 841.89])
   const { width, height } = page.getSize()
   const margin = 58
@@ -77,7 +63,7 @@ export async function generateReceiptPdf(input: PdfReceiptInput): Promise<Blob> 
   page.drawRectangle({ x: margin, y: height - 178, width: contentWidth, height: 45, color: rgb(0.96, 0.97, 0.98), borderColor: rgb(0.85, 0.87, 0.9), borderWidth: 1 })
   page.drawText(`Valor: ${formatCurrency(input.amountCents)}`, { x: margin + 16, y: height - 162, font: semibold, size: 16 })
 
-  const body = `Recebi de ${input.person.name.toLocaleUpperCase('pt-BR')}, CPF ${formatCpf(input.person.cpf)}, a importância de ${formatCurrency(input.amountCents)} (${moneyToWords(input.amountCents)}), referente ao pagamento do aluguel residencial do imóvel situado na ${input.person.propertyAddress}, correspondente ao mês de ${monthName(input.referenceMonth)} de ${input.referenceYear}.`
+  const body = `Recebi de ${input.person.name.toLocaleUpperCase('pt-BR')}, CPF ${formatCpf(input.person.cpf)}, a importância de ${formatCurrency(input.amountCents)} (${moneyToWords(input.amountCents)}), referente ao pagamento do aluguel residencial correspondente ao mês de ${monthName(input.referenceMonth)} de ${input.referenceYear}.`
   let y = height - 225
   y = drawWrapped(page, wrapText(body, regular, 11, contentWidth), regular, 11, margin, y, 18)
   y -= 20
@@ -109,6 +95,6 @@ export async function generateReceiptPdf(input: PdfReceiptInput): Promise<Blob> 
   return new Blob([bytes], { type: 'application/pdf' })
 }
 
-export function receiptPdfText(receipt: Pick<Receipt, 'tenantName' | 'tenantCpf' | 'propertyAddress' | 'amountCents' | 'referenceMonth' | 'referenceYear'>): string {
-  return `${receipt.tenantName} ${formatCpf(receipt.tenantCpf)} ${receipt.propertyAddress} ${formatCurrency(receipt.amountCents)} ${monthName(receipt.referenceMonth)} de ${receipt.referenceYear}`
+export function receiptPdfText(receipt: Pick<Receipt, 'tenantName' | 'tenantCpf' | 'amountCents' | 'referenceMonth' | 'referenceYear'>): string {
+  return `${receipt.tenantName} ${formatCpf(receipt.tenantCpf)} ${formatCurrency(receipt.amountCents)} ${monthName(receipt.referenceMonth)} de ${receipt.referenceYear}`
 }

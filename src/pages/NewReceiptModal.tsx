@@ -27,6 +27,11 @@ export function NewReceiptModal({ initialPerson, onClose, onCreated, goSettings,
   const [result, setResult] = useState<Receipt | null>(null)
 
   useEffect(() => { if (person) setAmount(formatCurrencyInput(person.defaultRentCents)) }, [person?.id])
+  const selectPerson = (id: string) => {
+    setPersonId(id)
+    const selected = people.find((entry) => entry.id === id)
+    setAmount(selected ? formatCurrencyInput(selected.defaultRentCents) : '')
+  }
   const generate = async (allowWithoutSignature = false) => {
     if (!person) return notify('Escolha uma pessoa.', 'error')
     if (!issuer?.name || !issuer.city) return goSettings()
@@ -44,10 +49,10 @@ export function NewReceiptModal({ initialPerson, onClose, onCreated, goSettings,
 
   if (result) return <ReceiptSuccess receipt={result} onClose={onClose} notify={notify}/>
   return <><Modal title="Gerar novo recibo" onClose={() => !generating && onClose()}><form onSubmit={(event) => { event.preventDefault(); void generate() }}>
-    <label className="field"><span className="field-label">Pessoa</span><select className="input" value={personId} onChange={(event) => setPersonId(event.target.value)} required><option value="">Escolha uma pessoa</option>{people.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select></label>
-    {person && <div className="card" style={{marginBottom:17}}><div className="person-row"><div className="row-icon"><UserRound size={20}/></div><div className="row-main"><span className="row-title">{person.name}</span><span className="row-subtitle">CPF {formatCpf(person.cpf)}</span><span className="row-subtitle">{person.propertyAddress}</span></div></div></div>}
+    <label className="field"><span className="field-label">Pessoa</span><select className="input" value={personId} onChange={(event) => selectPerson(event.target.value)} required><option value="">Escolha uma pessoa</option>{people.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select></label>
+    {person && <div className="card" style={{marginBottom:17}}><div className="person-row"><div className="row-icon"><UserRound size={20}/></div><div className="row-main"><span className="row-title">{person.name}</span><span className="row-subtitle">CPF {formatCpf(person.cpf)}</span></div></div></div>}
     <label className="field"><span className="field-label">Mês do aluguel</span><input className="input" type="month" value={month} onChange={(event) => setMonth(event.target.value)} required/></label>
-    <label className="field"><span className="field-label">Valor recebido</span><input className="input" inputMode="numeric" value={amount} onChange={(event) => setAmount(formatCurrency(parseCurrencyToCents(event.target.value)))} required/></label>
+    <label className="field"><span className="field-label">Valor recebido</span><input className="input" inputMode="decimal" placeholder="Ex.: 850 ou 850,50" value={amount} onChange={(event) => setAmount(event.target.value)} onBlur={() => { const cents = parseCurrencyToCents(amount); if (cents > 0) setAmount(formatCurrency(cents)) }} required/><span className="field-hint">Valor padrão do cadastro. A alteração vale somente para este recibo.</span></label>
     {!issuer?.name || !issuer.city ? <div className="notice">Antes do primeiro recibo, preencha seu nome e sua cidade em Configurações. <button type="button" className="text-button" onClick={goSettings}>Preencher agora</button></div> : <div className="detail"><small>Emitente</small><strong>{issuer.name} · {issuer.city}</strong></div>}
     <div className="confirm-box"><input id="payment-confirmed" type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)}/><label htmlFor="payment-confirmed">Confirmo que o pagamento acima foi realmente recebido.</label></div>
     <Button type="submit" className="full" disabled={!person || !month || !confirmed || generating || !issuer?.name || !issuer.city}>{generating ? <><Spinner/>Gerando PDF…</> : <><FileText size={20}/>Gerar recibo</>}</Button>

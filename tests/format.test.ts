@@ -8,6 +8,6 @@ describe('CPF', () => {
 })
 
 describe('valores', () => {
-  it('armazena moeda em centavos', () => expect(parseCurrencyToCents('R$ 1.234,56')).toBe(123456))
+  it.each([['850',85000],['850,50',85050],['R$ 1.234,56',123456]])('interpreta %s como reais', (value, cents) => expect(parseCurrencyToCents(value)).toBe(cents))
   it.each([[0,'zero reais'],[1,'um centavo'],[100,'um real'],[85000,'oitocentos e cinquenta reais'],[123456,'mil duzentos e trinta e quatro reais e cinquenta e seis centavos']])('escreve %i por extenso', (cents,text) => expect(moneyToWords(cents)).toBe(text))
 })

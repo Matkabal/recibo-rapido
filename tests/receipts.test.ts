@@ -10,7 +10,7 @@ vi.mock('../src/services/pdf', () => ({
 
 const person: Person = {
   id: 'person-1', name: 'João da Silva', searchName: 'joao da silva', cpf: '52998224725',
-  propertyAddress: 'Rua Exemplo, 100', defaultRentCents: 85000,
+  defaultRentCents: 85000,
   createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z'
 }
 

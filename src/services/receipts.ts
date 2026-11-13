@@ -38,7 +38,6 @@ export async function issueReceipt(draft: ReceiptDraft): Promise<Receipt> {
       tenantName: draft.person.name,
       searchTenantName: searchText(draft.person.name),
       tenantCpf: draft.person.cpf,
-      propertyAddress: draft.person.propertyAddress,
       amountCents: draft.amountCents,
       issuerName: issuer.name,
       issuerCpf: issuer.cpf,

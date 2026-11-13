@@ -25,8 +25,20 @@ export function isValidCpf(value: string): boolean {
 }
 
 export function parseCurrencyToCents(value: string): number {
-  const digits = value.replace(/\D/g, '')
-  return digits ? Number(digits) : 0
+  const normalized = value.trim().replace(/R\$/gi, '').replace(/\s/g, '')
+  if (!normalized) return 0
+  if (normalized.includes(',')) {
+    const [wholePart, decimalPart = '', ...extra] = normalized.replace(/\./g, '').split(',')
+    if (extra.length || !/^\d*$/.test(wholePart) || !/^\d{0,2}$/.test(decimalPart)) return 0
+    const whole = Number(wholePart || '0')
+    const decimals = Number(decimalPart.padEnd(2, '0'))
+    const cents = whole * 100 + decimals
+    return Number.isSafeInteger(cents) ? cents : 0
+  }
+  const whole = normalized.replace(/\./g, '')
+  if (!/^\d+$/.test(whole)) return 0
+  const cents = Number(whole) * 100
+  return Number.isSafeInteger(cents) ? cents : 0
 }
 
 export function formatCurrency(cents: number): string {

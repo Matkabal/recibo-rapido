@@ -92,6 +92,10 @@ export async function inspectBackup(file: File): Promise<BackupSummary> {
   }
   const data = JSON.parse(strFromU8(archive['data.json'])) as BackupData
   assert(Array.isArray(data.persons) && Array.isArray(data.receipts) && Array.isArray(data.annualCounters), 'Os dados do backup são inválidos.')
+  const people = data.persons.map((record) => {
+    const { propertyAddress: _legacyAddress, ...person } = record as Person & { propertyAddress?: string }
+    return person
+  })
   const receipts: Receipt[] = data.receipts.map((record) => {
     const pdf = archive[record.pdfPath]
     assert(pdf, `PDF ausente no recibo ${record.number}`)
@@ -121,7 +125,7 @@ export async function inspectBackup(file: File): Promise<BackupSummary> {
     restore: async () => {
       await db.transaction('rw', db.persons, db.issuerSettings, db.signatures, db.receipts, db.annualCounters, async () => {
         await Promise.all([db.persons.clear(), db.issuerSettings.clear(), db.signatures.clear(), db.receipts.clear(), db.annualCounters.clear()])
-        if (data.persons.length) await db.persons.bulkAdd(data.persons)
+        if (people.length) await db.persons.bulkAdd(people)
         if (data.issuerSettings.length) await db.issuerSettings.bulkAdd(data.issuerSettings)
         if (signatures.length) await db.signatures.bulkAdd(signatures)
         if (receipts.length) await db.receipts.bulkAdd(receipts)

@@ -3,7 +3,6 @@ export interface Person {
   name: string
   searchName: string
   cpf: string
-  propertyAddress: string
   defaultRentCents: number
   createdAt: string
   updatedAt: string
@@ -36,7 +35,7 @@ export interface Receipt {
   tenantName: string
   searchTenantName: string
   tenantCpf: string
-  propertyAddress: string
+  propertyAddress?: string
   amountCents: number
   issuerName: string
   issuerCpf?: string

@@ -10,13 +10,17 @@ class ReceiptDatabase extends Dexie {
 
   constructor() {
     super('recibo-rapido')
-    this.version(1).stores({
+    const schema = {
       persons: 'id, searchName, createdAt, updatedAt',
       issuerSettings: 'id',
       signatures: 'id, updatedAt',
       receipts: 'id, &number, [referenceYear+referenceMonth], referenceYear, issuedAt, searchTenantName, personId',
       annualCounters: 'year'
-    })
+    }
+    this.version(1).stores(schema)
+    this.version(2).stores(schema).upgrade((transaction) => transaction.table('persons').toCollection().modify((person: Record<string, unknown>) => {
+      delete person.propertyAddress
+    }))
   }
 }
 
